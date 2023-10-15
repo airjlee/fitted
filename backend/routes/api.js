@@ -1,97 +1,143 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
-
-// Import the database client
 const { Client } = require('pg');
-const connectionString = 'postgresql://username:password@localhost:5432/ootd_app';
-const client = new Client({ connectionString });
 
-// Connect to the database
-client.connect()
-  .then(() => {
-    console.log('Connected to the database');
-  })
-  .catch((error) => {
-    console.error('Error connecting to the database:', error);
-  });
+// Database connection parameters
+const db_params = {
+  user: 'airjlee',
+  host: 'localhost',
+  database: 'airjlee',
+  port: 5433, // Replace with the port number your PostgreSQL server is running on
+};
 
-// Define API endpoints
+/*
+// Create a new PostgreSQL client
+const client = new Client(db_params);
 
-// User Registration
-router.post('/register', async (req, res) => {
-  // Registration code...
-  const { username, email, password } = req.body;
+// Middleware to connect to the PostgreSQL database
+router.use(async (req, res, next) => {
   try {
-    // Hash the user's password before storing it
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const query = 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING user_id';
-    const result = await client.query(query, [username, email, hashedPassword]);
-    const userId = result.rows[0].user_id;
-
-    const token = jwt.sign({ userId, username, email }, 'your-secret-key'); // Replace 'your-secret-key' with a strong, secret key
-    res.status(201).json({ userId, username, email, token });
+    // Connect to the PostgreSQL server
+    await client.connect();
+    next();
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.error('Error connecting to the database:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+*/
+
+// Route to retrieve user credentials
+router.get('/user-credentials', async (req, res) => {
+  const client = new Client(db_params);
+  try {
+    await client.connect();
+    const query = 'SELECT * FROM user_credentials';
+    const result = await client.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving user credentials:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await client.end(); // Disconnect from the PostgreSQL server
+  }
+});
+
+// Route to retrieve user friends
+router.get('/user-friends', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM user_friends';
+    const result = await client.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving user friends:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// User Login
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-      const query = 'SELECT user_id, username, email, password FROM users WHERE username = $1';
-      const result = await client.query(query, [username]);
-  
-      if (result.rows.length === 0) {
-        return res.status(401).json({ message: 'Authentication failed' });
-      }
-  
-      const user = result.rows[0];
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-  
-      if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Authentication failed' });
-      }
-  
-      const token = jwt.sign({ userId: user.user_id, username: user.username, email: user.email }, 'your-secret-key'); // Replace 'your-secret-key' with the same secret key used for registration
-      res.status(200).json({ userId: user.user_id, username: user.username, email: user.email, token });
-    } catch (error) {
-      console.error('Error logging in:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
+// Route to retrieve user photos
+router.get('/user-photos', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM user_photos';
+    const result = await client.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving user photos:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-// Other API endpoints for outfits, likes, comments, etc.
 
-// Example endpoint to retrieve all outfits
-router.get('/outfits', async (req, res) => {
-    try {
-      const query = 'SELECT * FROM outfits';
-      const result = await client.query(query);
-      res.json(result.rows);
-    } catch (error) {
-      console.error('Error fetching outfits:', error);
-      res.status(500).json({ message: 'Internal server error' });
+router.put('/outfits/:outfitId', async (req, res) => {
+  const outfitId = req.params.outfitId; // Get the outfit ID from the request URL parameters
+  const { updatedField1, updatedField2 } = req.body; // Get the updated data from the request body
+
+  try {
+    // Your SQL query to update outfit information in the 'user_outfits' table
+    const query = `
+      UPDATE user_outfits
+      SET field1 = $1, field2 = $2
+      WHERE outfit_id = $3
+    `;
+
+    // Execute the query with the updated data and outfit ID
+    const result = await client.query(query, [updatedField1, updatedField2, outfitId]);
+
+    // Check if any rows were affected (if an outfit with the specified ID exists)
+    if (result.rowCount === 0) {
+      res.status(404).json({ message: 'Outfit not found' });
+    } else {
+      res.json({ message: 'Outfit updated successfully' });
     }
-  });
-  
-  // Example endpoint to create an outfit
-  router.post('/outfits', async (req, res) => {
-    const { title, description, image } = req.body;
-    try {
-      const query = 'INSERT INTO outfits (title, description, image) VALUES ($1, $2, $3) RETURNING *';
-      const result = await client.query(query, [title, description, image]);
-      res.json(result.rows[0]);
-    } catch (error) {
-      console.error('Error creating outfit:', error);
-      res.status(500).json({ message: 'Internal server error' });
+  } catch (error) {
+    console.error('Error updating outfit:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+router.put('/user-credentials/:userId', async (req, res) => {
+  const client = new Client(db_params);
+  const userId = req.params.userId; // Get the user ID from the request URL parameters
+  const { username, password } = req.body; // Get the updated data from the request body
+
+  try {
+    await client.connect();
+    // SQL query to update user credentials in the 'user_credentials' table
+    const query = `
+      UPDATE user_credentials
+      SET username = $1, password = $2
+      WHERE userid = $3
+    `;
+
+    // Execute the query with the updated data and user ID
+    const result = await client.query(query, [username, password, userId]);
+
+    // Check if any rows were affected (if the user with the specified ID exists)
+    if (result.rowCount === 0) {
+      res.status(404).json({ message: 'User not found' });
+    } else {
+      res.json({ message: 'User credentials updated successfully' });
     }
-  });
-  
-// ... Add more API endpoints for other operations
+  } catch (error) {
+    console.error('Error updating user credentials:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await client.end(); // Disconnect from the PostgreSQL server
+  }
+});
+
+/*
+
+// Middleware to disconnect from the PostgreSQL database after handling the request
+router.use(async (req, res, next) => {
+  try {
+    // Disconnect from the PostgreSQL server
+    await client.end();
+  } catch (error) {
+    console.error('Error disconnecting from the database:', error);
+  }
+});
+*/
 
 module.exports = router;

@@ -1,13 +1,17 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
 
+// Parse JSON request bodies
+app.use(bodyParser.json());
+
 const apiRoutes = require('./routes/api');
-const authRoutes = require('./routes/auth');
+
 
 app.use('/api', apiRoutes);
-app.use('/auth', authRoutes);
+
 
 // ... other middleware and configurations ...
 
