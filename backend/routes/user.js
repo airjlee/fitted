@@ -26,58 +26,6 @@ router.get('/user-credentials', async (req, res) => {
   }
 });
 
-// Route to retrieve user friends
-router.get('/user-friends', async (req, res) => {
-  try {
-    const query = 'SELECT * FROM user_friends';
-    const result = await client.query(query);
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error retrieving user friends:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Route to retrieve user photos
-router.get('/user-photos', async (req, res) => {
-  try {
-    const query = 'SELECT * FROM user_photos';
-    const result = await client.query(query);
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error retrieving user photos:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-router.put('/outfits/:outfitId', async (req, res) => {
-  const outfitId = req.params.outfitId; // Get the outfit ID from the request URL parameters
-  const { updatedField1, updatedField2 } = req.body; // Get the updated data from the request body
-
-  try {
-    // Your SQL query to update outfit information in the 'user_outfits' table
-    const query = `
-      UPDATE user_outfits
-      SET field1 = $1, field2 = $2
-      WHERE outfit_id = $3
-    `;
-
-    // Execute the query with the updated data and outfit ID
-    const result = await client.query(query, [updatedField1, updatedField2, outfitId]);
-
-    // Check if any rows were affected (if an outfit with the specified ID exists)
-    if (result.rowCount === 0) {
-      res.status(404).json({ message: 'Outfit not found' });
-    } else {
-      res.json({ message: 'Outfit updated successfully' });
-    }
-  } catch (error) {
-    console.error('Error updating outfit:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
 
 router.put('/user-credentials/:userId', async (req, res) => {
   const client = new Client(db_params);
