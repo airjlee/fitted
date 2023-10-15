@@ -97,5 +97,61 @@ router.post('/user-credentials', async (req, res) => {
   }
 });
 
+router.delete('/user-credentials/:userId', async (req, res) => {
+  const client = new Client(db_params);
+  const userId = req.params.userId; // Get the user ID from the request URL parameters
+
+  try {
+    await client.connect();
+    // SQL query to delete user credentials by user ID
+    const query = `
+      DELETE FROM user_credentials
+      WHERE userid = $1
+    `;
+
+    // Execute the query with the user ID
+    const result = await client.query(query, [userId]);
+
+    // Check if any rows were affected (if the user with the specified ID exists)
+    if (result.rowCount === 0) {
+      res.status(404).json({ message: 'User not found' });
+    } else {
+      res.json({ message: 'User credentials deleted successfully' });
+    }
+  } catch (error) {
+    console.error('Error deleting user credentials:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await client.end(); // Disconnesct from the PostgreSQL server
+  }
+});
+
+router.get('/user-credentials/:userId', async (req, res) => {
+  const client = new Client(db_params);
+  const userId = req.params.userId; // Get the user ID from the request URL parameters
+
+  try {
+    await client.connect();
+    // SQL query to retrieve user credentials by user ID
+    const query = `
+      SELECT * FROM user_credentials
+      WHERE userid = $1
+    `;
+
+    // Execute the query with the user ID
+    const result = await client.query(query, [userId]);
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ message: 'User not found' });
+    } else {
+      res.json(result.rows[0]); // Assuming the user ID is unique, so we return the first row
+    }
+  } catch (error) {
+    console.error('Error fetching user credentials:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  } finally {
+    await client.end(); // Disconnesct from the PostgreSQL server
+  }
+});
 
 module.exports = router;
