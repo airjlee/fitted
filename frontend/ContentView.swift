@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var isRegistrationViewPresented = false
     @State private var isLoginViewPresented = false
-    @State private var isHomeFeedViewPresented = false
+    @State private var isMainFeedViewPresented = false
     @State private var email = ""
     @State private var password = ""
     
@@ -46,7 +46,7 @@ struct ContentView: View {
             }
             
             Button(action: {
-                isLoginViewPresented.toggle()
+                isMainFeedViewPresented.toggle()
             }) {
                 Text("log In")
                         .frame(maxWidth: .infinity)
@@ -56,10 +56,10 @@ struct ContentView: View {
                         .border(Color.white, width: 2) // Add the outline
                         .foregroundColor(.white) // Set the text color
             }
-            
-            .sheet(isPresented: $isLoginViewPresented) {
-                LoginView()
+            .fullScreenCover(isPresented: $isMainFeedViewPresented) {
+                MainFeed()
             }
+            
             Spacer()
             
             Text("or with")

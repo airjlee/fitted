@@ -1,0 +1,198 @@
+import SwiftUI
+
+struct MainFeed: View {
+    @State private var selectedTab = 0
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            ExploreView()
+                .tag(0) // Set the tag to match the selectedTab
+                .tabItem {
+                    Label("Explore", systemImage: "1.circle")
+                }
+            
+            FollowingView()
+                .tag(1) // Set the tag to match the selectedTab
+                .tabItem {
+                    Label("Following", systemImage: "2.circle")
+                    
+                }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+    }
+}
+
+struct MainFeed_Previews: PreviewProvider {
+    static var previews: some View {
+        MainFeed()
+    }
+}
+
+struct ExploreView: View {
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack {
+                HStack {
+                    Text("flair.")
+                        .font(.system(size: 30, weight: .heavy))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .layoutPriority(1)
+                        .offset(x: -70, y: 0)
+                    HStack {
+                        Button {
+                            //link action here
+                            print("camera")
+                        } label: {
+                            Image("camera")
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                        }
+                        Spacer().frame(width: 20)
+                        Button {
+                            //link action here
+                            print("search")
+                        } label: {
+                            Image("search")
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 32, height: 32)
+                        }
+                        Spacer().frame(width: 20)
+                        Button {
+                            //link action here
+                            print("profile pic")
+                        } label: {
+                            Image("morsalin sur")
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                        }
+                    }
+                    Spacer()
+                }
+                Text("Explore")
+                    .font(.system(size: 30, weight: .heavy))
+                    .foregroundColor(.white)
+                
+                HStack {
+                    Button {
+                        //link action here
+                        print("profile pic")
+                    } label: {
+                        Image("morsalin sur")
+                            .renderingMode(.original)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    }
+                    VStack {
+                        Text("UserName")
+                            .foregroundColor(.white)
+                            
+                        Text("Timestamp")
+                            .foregroundColor(.white)
+
+                    }
+                    Spacer()
+                }
+                Spacer()
+            }
+        }
+        .padding(.bottom, 20)
+
+    }
+}
+
+struct FollowingView: View {
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack {
+                HStack {
+                    Text("flair.")
+                        .font(.system(size: 30, weight: .heavy))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .layoutPriority(1)
+                        .offset(x: -70, y: 0)
+                    HStack {
+                        Button {
+                            //link action here
+                            print("camera")
+                        } label: {
+                            Image("camera")
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                        }
+                        Spacer().frame(width: 20)
+                        Button {
+                            //link action here
+                            print("search")
+                        } label: {
+                            Image("search")
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 32, height: 32)
+                        }
+                        Spacer().frame(width: 20)
+                        Button {
+                            //link action here
+                            print("profile pic")
+                        } label: {
+                            Image("morsalin sur")
+                                .renderingMode(.original)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                        }
+                    }
+                    Spacer()
+                }
+                Text("Following")
+                    .font(.system(size: 30, weight: .heavy))
+                    .foregroundColor(.white)
+                
+                HStack {
+                    Button {
+                        //link action here
+                        print("profile pic")
+                    } label: {
+                        Image("morsalin sur")
+                            .renderingMode(.original)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    }
+                    VStack {
+                        Text("UserName")
+                            .foregroundColor(.white)
+                            
+                        Text("Timestamp")
+                            .foregroundColor(.white)
+
+                    }
+                    Spacer()
+                }
+                Spacer()
+            }
+        }
+        .padding(.bottom, 20)
+
+    }
+}
+
+
