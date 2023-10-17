@@ -11,7 +11,7 @@ const db_params = {
 };
 
 // Route to retrieve user credentials
-router.get('/user-credentials', async (req, res) => {
+router.get('/user', async (req, res) => {
   const client = new Client(db_params);
   try {
     await client.connect();
@@ -79,7 +79,7 @@ router.put('/outfits/:outfitId', async (req, res) => {
 });
 
 
-router.put('/user-credentials/:userId', async (req, res) => {
+router.put('/user/:userId', async (req, res) => {
   const client = new Client(db_params);
   const userId = req.params.userId; // Get the user ID from the request URL parameters
   const { username, password } = req.body; // Get the updated data from the request body
@@ -110,7 +110,7 @@ router.put('/user-credentials/:userId', async (req, res) => {
   }
 });
 
-router.post('/user-credentials', async (req, res) => {
+router.post('/user', async (req, res) => {
   const client = new Client(db_params); // Create a new client for this request
 
   try {

@@ -8,7 +8,7 @@ const port = 3000;
 app.use(bodyParser.json());
 
 const apiRoutes = require('./routes/user');
-app.use('/user', apiRoutes);
+app.use('/users', apiRoutes);
 
 
 // ... other middleware and configurations ...

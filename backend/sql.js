@@ -16,25 +16,29 @@ async function createTables() {
     await client.connect();
 
     // Query to create a database table for user credentials
-    const createTableQuery1 = `
-      CREATE TABLE IF NOT EXISTS user_credentials (
-        userid serial PRIMARY KEY,
-        username VARCHAR (50) UNIQUE NOT NULL,
-        password VARCHAR (50) NOT NULL
+    const createUsersTable = `
+      CREATE TABLE IF NOT EXISTS user (
+        user_id SERIAL PRIMARY KEY,
+        username VARCHAR(50) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        password_hash VARCHAR(100) NOT NULL,
+        full_name VARCHAR(100),
+        bio TEXT,
+        profile_picture_url VARCHAR(255)
+    );
       );
     `;
 
     // Query to create a database table for user friends
-    const createTableQuery2 = `
-      CREATE TABLE IF NOT EXISTS user_friends (
-        friendid serial PRIMARY KEY,
-        user_id1 INTEGER,
-        user_id2 INTEGER,
-        dateAccepted DATE,
-        FOREIGN KEY (user_id1) REFERENCES user_credentials (userid),
-        FOREIGN KEY (user_id2) REFERENCES user_credentials (userid)
-      );
-    `;
+    const createPostsTable = `
+      CREATE TABLE IF NOT EXISTS Posts (
+        post_id SERIAL PRIMARY KEY,
+        user_id INT REFERENCES Users(user_id),
+        caption TEXT,
+        image_url VARCHAR(255),
+        creation_date TIMESTAMP DEFAULT current_timestamp
+    );
+`;
 
     // Query to create a database table for user photos
     const createTableQuery3 = `
@@ -48,8 +52,8 @@ async function createTables() {
     `;
 
     // Execute the table creation queries
-    await client.query(createTableQuery1);
-    await client.query(createTableQuery2);
+    await client.query(createUsersTable);
+    await client.query(createPostsTable);
     await client.query(createTableQuery3);
 
     console.log('Tables have been created successfully!');
@@ -65,7 +69,7 @@ async function createTables() {
 createTables();
 
 
-
+/*
 // Function to insert a new user into the user_credentials table
 async function insertUser() {
   const client = new Client(db_params);
@@ -100,6 +104,7 @@ async function insertUser() {
 // Call the insertUser function to insert a new user
 insertUser();
 
+*/
 
 
 
